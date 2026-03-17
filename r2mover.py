@@ -16,21 +16,26 @@
 
 import rclpy
 from rclpy.node import Node
-import geometry_msgs.msg
+import geometry_msgs.msg # Uses geometry_msgs.msg.Twist.
 
 # constants
 rotatechange = 0.1
 speedchange = 0.05
-
+# How much you increase velocity per keypress ^^
 
 class Mover(Node):
     def __init__(self):
         super().__init__('mover')
         self.publisher_ = self.create_publisher(geometry_msgs.msg.Twist,'cmd_vel',10)
 
+	###Node named mover
+		#Publisher on /cmd_vel (topic name is 'cmd_vel')
+		#message type = Twist
+		#queue depth = 10
+
 # function to read keyboard input
     def readKey(self):
-        twist = geometry_msgs.msg.Twist()
+        twist = geometry_msgs.msg.Twist() # Creates a Twist message once and reuses it.
         try:
             while True:
                 # get keyboard input
@@ -43,23 +48,23 @@ class Mover(Node):
                     twist.angular.z = 0.0
                 elif cmd_char == 'w':
                     # move forward
-                    twist.linear.x += speedchange
+                    twist.linear.x += speedchange #keeps increaseing speed at each press ### increase forward speed
                     twist.angular.z = 0.0
                 elif cmd_char == 'x':
                     # move backward
-                    twist.linear.x -= speedchange
+                    twist.linear.x -= speedchange #keeps decreaseing speed at each press  #### increase backward speed
                     twist.angular.z = 0.0
                 elif cmd_char == 'a':
                     # turn counter-clockwise
                     twist.linear.x = 0.0
-                    twist.angular.z += rotatechange
+                    twist.angular.z += rotatechange # rotate CCW (positive angular.z)
                 elif cmd_char == 'd':
                     # turn clockwise
                     twist.linear.x = 0.0
-                    twist.angular.z -= rotatechange
+                    twist.angular.z -= rotatechange # rotate CW (negative angular.z)
 
                 # start the movement
-                self.publisher_.publish(twist)
+                self.publisher_.publish(twist) # Sends Twist message to /cmd_vel. TurtleBot listens and moves.
                 
         except Exception as e:
             print(e)
